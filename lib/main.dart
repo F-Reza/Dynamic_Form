@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFF03a9ff),
             iconTheme: const IconThemeData(color: Colors.white),
-            elevation: 0, // Removes shadow if any
+            elevation: 0,
           ),
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF03a9ff),),
           useMaterial3: true,

@@ -56,7 +56,7 @@ class _FormPage2State extends State<FormPage2> {
   final List<Map<String, dynamic>> _furnishedPropertyOptions = [
     {"label": "Yes", "value": "yes"},
     {"label": "No", "value": "no"},
-    {"label": "NA", "value": "na"},
+    {"label": "N/A", "value": "na"},
   ];
 
   @override
@@ -110,7 +110,7 @@ class _FormPage2State extends State<FormPage2> {
       final formData = {
         'id':'2',
         'propertyAddress': _propertyAddressController.text,
-        'propertyType': _selectedPropertyType,
+        'propertyType': _selectedPropertyType, //
         'area': _areaController.text,
         'furnishedProperty': _furnishedPropertyValue,
         'defects': _selectedDefects,
@@ -127,7 +127,7 @@ class _FormPage2State extends State<FormPage2> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SubmissionViewPage(formData: formData),
+          builder: (context) => SubmissionViewPage(formData: formData, formName: 'Property Inspection'),
         ),
       );
 
@@ -177,7 +177,7 @@ class _FormPage2State extends State<FormPage2> {
 
               // Area Field
               _buildTextFormField(
-                controller: _propertyAddressController,
+                controller: _areaController,
                 label: 'Area (sq ft)',
                 hintText: 'ex: 1500 sq ft',
                 minLength: 5,

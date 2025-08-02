@@ -56,7 +56,7 @@ class _FormPage1State extends State<FormPage1> {
   final List<Map<String, dynamic>> _recommendationOptions = [
     {"label": "Yes", "value": "yes"},
     {"label": "No", "value": "no"},
-    {"label": "NA", "value": "na"},
+    {"label": "N/A", "value": "na"},
   ];
 
   @override
@@ -125,7 +125,7 @@ class _FormPage1State extends State<FormPage1> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SubmissionViewPage(formData: formData),
+          builder: (context) => SubmissionViewPage(formData: formData, formName: 'Customer Feedback'),
         ),
       );
 

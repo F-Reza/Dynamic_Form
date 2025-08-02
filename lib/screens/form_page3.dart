@@ -54,7 +54,7 @@ class _FormPage3State extends State<FormPage3> {
   final List<Map<String, dynamic>> _allergiesOptions = [
     {"label": "Yes", "value": "yes"},
     {"label": "No", "value": "no"},
-    {"label": "NA", "value": "na"},
+    {"label": "N/A", "value": "na"},
   ];
 
   @override
@@ -107,7 +107,7 @@ class _FormPage3State extends State<FormPage3> {
         'id':'3',
         'patientName': _nameController.text,
         'gender': _selectedGender,
-        'age': _ageController,
+        'age': _ageController.text,
         'conditions': _selectedConditions,
         'allergies': _allergiesValue,
         'specify': _specifyController.text,
@@ -123,7 +123,7 @@ class _FormPage3State extends State<FormPage3> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SubmissionViewPage(formData: formData),
+          builder: (context) => SubmissionViewPage(formData: formData, formName: 'Health Survey'),
         ),
       );
 
@@ -172,7 +172,7 @@ class _FormPage3State extends State<FormPage3> {
 
               // Age Field
               _buildTextFormField(
-                controller: _nameController,
+                controller: _ageController,
                 label: 'Age',
                 hintText: 'ex: 35',
                 minLength: 1,

@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SubmissionViewPage extends StatelessWidget {
   static const routeName = '/submission_view';
   final Map<String, dynamic> formData;
+  final String formName;
 
-  const SubmissionViewPage({super.key, required this.formData});
+  const SubmissionViewPage({super.key, required this.formData, required this.formName});
 
   Future<void> _saveToFile(BuildContext context) async {
     try {
@@ -31,7 +33,6 @@ class SubmissionViewPage extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Saved to: ${file.path}")),
       );
-      print("Saved to: ${file.path}");
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error saving file: $e")),
@@ -41,9 +42,12 @@ class SubmissionViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    final formattedTime = DateFormat('hh:mm a').format(now);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Submission Invoice"),
+        title: Text(formName),
         centerTitle: true,
       ),
       body: Padding(
@@ -83,6 +87,12 @@ class SubmissionViewPage extends StatelessWidget {
                       style: TextStyle(color: Colors.grey.shade700),
                     ),
                   ),
+                  /*Center(
+                    child: Text(
+                      "Date: $formattedDate  Time: $formattedTime",
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                  ),*/
                   const Divider(height: 30, thickness: 1),
                   ..._buildFormattedFields(formData),
                   const SizedBox(height: 24),
@@ -106,7 +116,9 @@ class SubmissionViewPage extends StatelessWidget {
   }
 
   List<Widget> _buildFormattedFields(Map<String, dynamic> data) {
-    final Map<String, String> ageGroupMap = {
+    final id = data['id'];
+
+    final ageGroupMap = {
       "1": "Under 18",
       "2": "18-30",
       "3": "31-45",
@@ -121,53 +133,96 @@ class SubmissionViewPage extends StatelessWidget {
       4: "Pricing"
     };
 
-    final fieldLabels1 = {
-      'fullName': 'Full Name',
-      'email': 'Email',
-      'ageGroup': 'Age Group',
-      'likes': 'Likes',
-      'recommendation': 'Recommendation',
-      'comments': 'Comments',
-      'images': 'Images',
+    final propertyTypeMap = {
+      "1": "Apartment",
+      "2": "House",
+      "3": "Commercial",
+      "4": "Land",
     };
 
-    final fieldLabels2 = {
-      'propertyAddress': 'Property Address',
-      'propertyType': 'Property Type',
-      'area': 'Area',
-      'furnishedProperty': 'Is the property furnished?',
-      'defects': 'Defects Found',
-      'notes': 'Additional Notes',
-      'images': 'Images',
+    final defectOptionsMap = {
+      1: "Cracks in Walls",
+      2: "Leaking Roof",
+      3: "Faulty Wiring",
+      4: "Plumbing Issues",
     };
-    final fieldLabels3 = {
-      'patientName': 'Patient Name',
-      'gender': 'Gender',
-      'age': 'Age',
-      'conditions': 'Existing Conditions',
-      'allergies': 'Any allergies?',
-      'specify': 'If yes, specify',
-      'images': 'Images',
+
+    final genderMap = {
+      "1": "Male",
+      "2": "Female",
+      "3": "Other",
+    };
+
+    final conditionOptionsMap = {
+      1: "Diabetes",
+      2: "Hypertension",
+      3: "Asthma",
+      4: "Heart Disease",
+    };
+
+    final labels = {
+      '1': {
+        'fullName': 'Full Name',
+        'email': 'Email',
+        'ageGroup': 'Age Group',
+        'likes': 'Likes',
+        'recommendation': 'Recommendation',
+        'comments': 'Comments',
+      },
+      '2': {
+        'propertyAddress': 'Property Address',
+        'propertyType': 'Property Type',
+        'area': 'Area',
+        'furnishedProperty': 'Is the property furnished?',
+        'defects': 'Defects Found',
+        'notes': 'Additional Notes',
+      },
+      '3': {
+        'patientName': 'Patient Name',
+        'gender': 'Gender',
+        'age': 'Age',
+        'conditions': 'Existing Conditions',
+        'allergies': 'Any allergies?',
+        'specify': 'If yes, specify',
+      }
     };
 
     List<Widget> widgets = [];
 
+
     data.forEach((key, value) {
-      String label = fieldLabels1[key] ?? key;
+      if (key == 'id') return;
+      String label = labels[id]?[key] ?? key;
 
       if (key == 'likes' && value is List) {
         final likedItems = value.map((v) => likeOptionsMap[v] ?? v.toString()).join(', ');
         widgets.add(_invoiceRow(label, likedItems));
+      } else if (key == 'defects' && value is List) {
+        final defectList = value.map((v) => defectOptionsMap[v] ?? v.toString()).join(', ');
+        widgets.add(_invoiceRow(label, defectList));
+      } else if (key == 'conditions' && value is List) {
+        final conditionsList = value.map((v) => conditionOptionsMap[v] ?? v.toString()).join(', ');
+        widgets.add(_invoiceRow(label, conditionsList));
+      } else if (key == 'propertyType') {
+        final propertyTypeText = propertyTypeMap[value.toString()] ?? value.toString();
+        widgets.add(_invoiceRow(label, propertyTypeText));
       } else if (key == 'ageGroup') {
         final ageText = ageGroupMap[value.toString()] ?? value.toString();
         widgets.add(_invoiceRow(label, ageText));
-      } else if (key == 'images') {
+      } else if (key == 'gender') {
+        final genderText = genderMap[value.toString()] ?? value.toString();
+        widgets.add(_invoiceRow(label, genderText));
+      } else if (key == 'recommendation' || key == 'furnishedProperty' || key == 'allergies') {
+        final ynText = _formatYesNoNA(value.toString());
+        widgets.add(_invoiceRow(label, ynText));
+      }
+      else if (key == 'images') {
         List images = value as List;
         widgets.add(
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Uploaded Images:', style: const TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Uploaded Images:', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -196,6 +251,20 @@ class SubmissionViewPage extends StatelessWidget {
     return widgets;
   }
 
+  String _formatYesNoNA(String input) {
+    switch (input.toLowerCase()) {
+      case 'yes':
+        return 'Yes';
+      case 'no':
+        return 'No';
+      case 'na':
+        return 'N/A';
+      default:
+        return input;
+    }
+  }
+
+
   Widget _invoiceRow(String label, String value) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -203,7 +272,7 @@ class SubmissionViewPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 130,
+            width: 140,
             child: Text(
               '$label:',
               style: const TextStyle(fontWeight: FontWeight.bold),
