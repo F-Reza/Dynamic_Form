@@ -125,7 +125,7 @@ class _FormPage1State extends State<FormPage1> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SubmissionViewPage(formData: formData, formName: 'Customer Feedback'),
+          builder: (context) => SubmissionViewPage(formData: formData, formName: 'Customer Feedback',),
         ),
       );
 

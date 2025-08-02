@@ -14,6 +14,7 @@ dependencies:
   path_provider:
   permission_handler:
   open_file:
+  pdf:
   image_picker:
   shared_preferences:
   fluttertoast:

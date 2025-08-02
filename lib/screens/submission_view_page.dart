@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SubmissionViewPage extends StatelessWidget {
   static const routeName = '/submission_view';
@@ -11,9 +13,17 @@ class SubmissionViewPage extends StatelessWidget {
   const SubmissionViewPage({super.key, required this.formData, required this.formName});
 
   Future<void> _saveToFile(BuildContext context) async {
+
+    // await generatePdfWithImages(formData);
+
     try {
+      final downloadDir = Directory('/storage/emulated/0/Download');
+      if (!await downloadDir.exists()) {
+        await downloadDir.create(recursive: true);
+      }
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/invoice_${DateTime.now().millisecondsSinceEpoch}.txt');
+      final file = File('${downloadDir.path}/invoice_${DateTime.now().millisecondsSinceEpoch}.txt');
+      // final file = File('${directory.path}/invoice_${DateTime.now().millisecondsSinceEpoch}.txt');
 
       StringBuffer buffer = StringBuffer();
       buffer.writeln("=== Form Submission Invoice ===\n");
@@ -38,7 +48,153 @@ class SubmissionViewPage extends StatelessWidget {
         SnackBar(content: Text("Error saving file: $e")),
       );
     }
+
   }
+
+
+
+  /*Future<void> generatePdfWithImages(Map<String, dynamic> formData) async {
+    final pdf = pw.Document();
+    final now = DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+    final timeStr = DateFormat('hh:mm a').format(now);
+
+    // Label Maps
+    final ageGroupMap = {
+      "1": "Under 18",
+      "2": "18-30",
+      "3": "31-45",
+      "4": "46-60",
+      "5": "Over 60",
+    };
+
+    final likeOptionsMap = {
+      1: "Product Quality",
+      2: "Customer Service",
+      3: "Delivery Speed",
+      4: "Pricing"
+    };
+
+    final genderMap = {
+      "1": "Male",
+      "2": "Female",
+      "3": "Other",
+    };
+
+    final propertyTypeMap = {
+      "1": "Apartment",
+      "2": "House",
+      "3": "Commercial",
+      "4": "Land",
+    };
+
+    final defectOptionsMap = {
+      1: "Cracks in Walls",
+      2: "Leaking Roof",
+      3: "Faulty Wiring",
+      4: "Plumbing Issues",
+    };
+
+    final conditionOptionsMap = {
+      1: "Diabetes",
+      2: "Hypertension",
+      3: "Asthma",
+      4: "Heart Disease",
+    };
+
+    String formatYesNoNA(String input) {
+      switch (input.toLowerCase()) {
+        case 'yes':
+          return 'Yes';
+        case 'no':
+          return 'No';
+        case 'na':
+          return 'N/A';
+        default:
+          return input;
+      }
+    }
+
+    List<pw.Widget> formWidgets = [
+      pw.Center(
+        child: pw.Text("FORM SUBMISSION INVOICE",
+            style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+      ),
+      pw.SizedBox(height: 8),
+      pw.Center(child: pw.Text("Date: $dateStr   Time: $timeStr")),
+      pw.Divider(),
+    ];
+
+    for (var entry in formData.entries) {
+      final key = entry.key;
+      final value = entry.value;
+
+      if (key == 'id') continue;
+
+      if (key == 'likes' && value is List) {
+        final text = value.map((v) => likeOptionsMap[v] ?? v.toString()).join(', ');
+        formWidgets.add(pw.Text("Likes: $text"));
+      } else if (key == 'defects' && value is List) {
+        final text = value.map((v) => defectOptionsMap[v] ?? v.toString()).join(', ');
+        formWidgets.add(pw.Text("Defects: $text"));
+      } else if (key == 'conditions' && value is List) {
+        final text = value.map((v) => conditionOptionsMap[v] ?? v.toString()).join(', ');
+        formWidgets.add(pw.Text("Conditions: $text"));
+      } else if (key == 'ageGroup') {
+        formWidgets.add(pw.Text("Age Group: ${ageGroupMap[value.toString()] ?? value}"));
+      } else if (key == 'gender') {
+        formWidgets.add(pw.Text("Gender: ${genderMap[value.toString()] ?? value}"));
+      } else if (key == 'propertyType') {
+        formWidgets.add(pw.Text("Property Type: ${propertyTypeMap[value.toString()] ?? value}"));
+      } else if (['recommendation', 'furnishedProperty', 'allergies'].contains(key)) {
+        formWidgets.add(pw.Text("${_capitalize(key)}: ${formatYesNoNA(value)}"));
+      } else if (key == 'images' && value is List) {
+        formWidgets.add(pw.SizedBox(height: 10));
+        formWidgets.add(pw.Text("Images:"));
+        for (var imagePath in value) {
+          final file = File(imagePath);
+          if (await file.exists()) {
+            final imgBytes = await file.readAsBytes();
+            final image = pw.MemoryImage(imgBytes);
+            formWidgets.add(pw.SizedBox(height: 8));
+            formWidgets.add(pw.Image(image, width: 200, height: 150));
+          }
+        }
+        formWidgets.add(pw.SizedBox(height: 10));
+      } else {
+        formWidgets.add(pw.Text("${_capitalize(key)}: ${value.toString()}"));
+      }
+    }
+
+    pdf.addPage(pw.Page(
+      margin: const pw.EdgeInsets.all(24),
+      build: (context) => pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: formWidgets,
+      ),
+    ));
+
+    // Save to Downloads
+    if (await Permission.storage.request().isGranted) {
+      final downloadDir = Directory('/storage/emulated/0/Download');
+      if (!await downloadDir.exists()) {
+        await downloadDir.create(recursive: true);
+      }
+
+      final file = File('${downloadDir.path}/form_invoice_${now.millisecondsSinceEpoch}.pdf');
+      await file.writeAsBytes(await pdf.save());
+
+      print("PDF saved to: ${file.path}");
+    } else {
+      print(" Storage permission denied");
+    }
+  }
+
+  String _capitalize(String input) {
+    if (input.isEmpty) return input;
+    return input[0].toUpperCase() + input.substring(1);
+  }
+*/
 
   @override
   Widget build(BuildContext context) {
