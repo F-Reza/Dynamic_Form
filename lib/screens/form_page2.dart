@@ -108,6 +108,7 @@ class _FormPage2State extends State<FormPage2> {
       _formKey.currentState!.save();
 
       final formData = {
+        'id':'2',
         'propertyDetails': _propertyDetailsController.text,
         'area': _areaController.text,
         'propertyType': _selectedPropertyType,
