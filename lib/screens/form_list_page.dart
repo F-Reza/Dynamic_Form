@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/form_model.dart';
 import '../providers/form_provider.dart';
-import 'form_page.dart';
+import 'form_page1.dart';
+import 'form_page2.dart';
+import 'form_page3.dart';
 
 class FormListPage extends StatelessWidget {
   static const routeName = '/form-list';
@@ -13,8 +15,8 @@ class FormListPage extends StatelessWidget {
 
     final formList = [
       'Customer Feedback Form',
-      'Employee Satisfaction Survey',
-      'Product Feedback Form'
+      'Property Inspection Form',
+      'Health Survey Form'
     ];
 
     return Scaffold(
@@ -34,7 +36,7 @@ class FormListPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FormPage(formName: formName),
+                    builder: (context) => FormPage3(formName: formName),
                   ),
                 );
               },

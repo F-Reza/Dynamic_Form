@@ -6,17 +6,17 @@ import 'package:provider/provider.dart';
 import '../models/form_model.dart';
 import '../providers/form_provider.dart';
 
-class FormPage extends StatefulWidget {
+class FormPage1 extends StatefulWidget {
   static const routeName = '/form';
   final String? formName;
 
-  const FormPage({super.key, this.formName});
+  const FormPage1({super.key, this.formName});
 
   @override
-  State<FormPage> createState() => _FormPageState();
+  State<FormPage1> createState() => _FormPage1State();
 }
 
-class _FormPageState extends State<FormPage> {
+class _FormPage1State extends State<FormPage1> {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
 
@@ -238,15 +238,6 @@ class _FormPageState extends State<FormPage> {
                 label: 'Upload a photo (optional)',
                 isMultiImage: false,
                 onPressed: () => _pickImage(false),
-                images: _selectedImages,
-                onRemove: _removeImage,
-              ),
-
-              // Multi Image Upload
-              _buildImageUploadCard(
-                label: 'Upload multiple photos (optional)',
-                isMultiImage: true,
-                onPressed: () => _pickImage(true),
                 images: _selectedImages,
                 onRemove: _removeImage,
               ),
@@ -576,83 +567,6 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  Widget _buildImageUploadCard({
-    required String label,
-    required bool isMultiImage,
-    required VoidCallback onPressed,
-    required List<XFile> images,
-    required Function(int) onRemove,
-  }) {
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: Colors.grey.shade300),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (images.isEmpty)
-              OutlinedButton.icon(
-                onPressed: onPressed,
-                icon: const Icon(Icons.add_a_photo, size: 20),
-                label: Text(
-                  isMultiImage ? 'Select Multiple Images' : 'Select Image',
-                  style: const TextStyle(fontSize: 14),
-                ),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            if (images.isNotEmpty) ...[
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: List.generate(images.length, (index) {
-                  return _buildImagePreview(images[index], () => onRemove(index));
-                }),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: onPressed,
-                    icon: const Icon(Icons.add, size: 20),
-                    label: const Text('Add More', style: TextStyle(fontSize: 14)),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(0, 36),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${images.length} ${isMultiImage ? 'images' : 'image'} selected',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildImagePreview(XFile image, VoidCallback onRemove) {
     return Stack(
