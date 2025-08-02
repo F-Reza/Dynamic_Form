@@ -7,7 +7,7 @@ import '../models/form_model.dart';
 import '../providers/form_provider.dart';
 
 class FormPage1 extends StatefulWidget {
-  static const routeName = '/form';
+  static const routeName = '/form1';
   final String? formName;
 
   const FormPage1({super.key, this.formName});
@@ -244,7 +244,7 @@ class _FormPage1State extends State<FormPage1> {
               ),
 
               // Submit Button
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               Center(
                 child: ElevatedButton(
                   onPressed: _submitForm,

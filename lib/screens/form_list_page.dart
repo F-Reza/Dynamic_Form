@@ -12,7 +12,6 @@ class FormListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final formList = [
       'Customer Feedback Form',
       'Property Inspection Form',
@@ -33,11 +32,21 @@ class FormListPage extends StatelessWidget {
               leading: const Icon(Icons.description),
               trailing: const Icon(Icons.arrow_forward),
               onTap: () {
+                Widget formPage;
+
+                if (formName == 'Customer Feedback Form') {
+                  formPage = FormPage1(formName: formName);
+                } else if (formName == 'Property Inspection Form') {
+                  formPage = FormPage2(formName: formName);
+                } else if (formName == 'Health Survey Form') {
+                  formPage = FormPage3(formName: formName);
+                } else {
+                  return;
+                }
+
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => FormPage3(formName: formName),
-                  ),
+                  MaterialPageRoute(builder: (context) => formPage),
                 );
               },
             ),

@@ -106,7 +106,7 @@ class SubmissionViewPage extends StatelessWidget {
   }
 
   List<Widget> _buildFormattedFields(Map<String, dynamic> data) {
-    final Map<String, String> _ageGroupMap = {
+    final Map<String, String> ageGroupMap = {
       "1": "Under 18",
       "2": "18-30",
       "3": "31-45",
@@ -121,7 +121,7 @@ class SubmissionViewPage extends StatelessWidget {
       4: "Pricing"
     };
 
-    final fieldLabels = {
+    final fieldLabels1 = {
       'fullName': 'Full Name',
       'email': 'Email',
       'ageGroup': 'Age Group',
@@ -131,16 +131,35 @@ class SubmissionViewPage extends StatelessWidget {
       'images': 'Images',
     };
 
+    final fieldLabels2 = {
+      'propertyAddress': 'Property Address',
+      'propertyType': 'Property Type',
+      'area': 'Area',
+      'furnishedProperty': 'Is the property furnished?',
+      'defects': 'Defects Found',
+      'notes': 'Additional Notes',
+      'images': 'Images',
+    };
+    final fieldLabels3 = {
+      'patientName': 'Patient Name',
+      'gender': 'Gender',
+      'age': 'Age',
+      'conditions': 'Existing Conditions',
+      'allergies': 'Any allergies?',
+      'specify': 'If yes, specify',
+      'images': 'Images',
+    };
+
     List<Widget> widgets = [];
 
     data.forEach((key, value) {
-      String label = fieldLabels[key] ?? key;
+      String label = fieldLabels1[key] ?? key;
 
       if (key == 'likes' && value is List) {
         final likedItems = value.map((v) => likeOptionsMap[v] ?? v.toString()).join(', ');
         widgets.add(_invoiceRow(label, likedItems));
       } else if (key == 'ageGroup') {
-        final ageText = _ageGroupMap[value.toString()] ?? value.toString();
+        final ageText = ageGroupMap[value.toString()] ?? value.toString();
         widgets.add(_invoiceRow(label, ageText));
       } else if (key == 'images') {
         List images = value as List;

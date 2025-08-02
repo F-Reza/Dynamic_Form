@@ -7,7 +7,7 @@ import '../models/form_model.dart';
 import '../providers/form_provider.dart';
 
 class FormPage2 extends StatefulWidget {
-  static const routeName = '/form';
+  static const routeName = '/form2';
   final String? formName;
 
   const FormPage2({super.key, this.formName});
@@ -21,7 +21,7 @@ class _FormPage2State extends State<FormPage2> {
   final ImagePicker _picker = ImagePicker();
 
   // Form controllers and state variables
-  final TextEditingController _propertyDetailsController = TextEditingController();
+  final TextEditingController _propertyAddressController = TextEditingController();
   final TextEditingController _areaController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
@@ -61,7 +61,7 @@ class _FormPage2State extends State<FormPage2> {
 
   @override
   void dispose() {
-    _propertyDetailsController.dispose();
+    _propertyAddressController.dispose();
     _areaController.dispose();
     _notesController.dispose();
     super.dispose();
@@ -109,11 +109,11 @@ class _FormPage2State extends State<FormPage2> {
 
       final formData = {
         'id':'2',
-        'propertyDetails': _propertyDetailsController.text,
-        'area': _areaController.text,
+        'propertyAddress': _propertyAddressController.text,
         'propertyType': _selectedPropertyType,
+        'area': _areaController.text,
+        'furnishedProperty': _furnishedPropertyValue,
         'defects': _selectedDefects,
-        'recommendation': _furnishedPropertyValue,
         'notes': _notesController.text,
         'images': _selectedImages.map((image) => image.path).toList(),
       };
@@ -149,10 +149,10 @@ class _FormPage2State extends State<FormPage2> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Full Name Field
+              // Property Address Field
               _buildSectionTitle('Property Details'),
               _buildTextFormField(
-                controller: _propertyDetailsController,
+                controller: _propertyAddressController,
                 label: 'Property Address',
                 hintText: 'ex: 123 Main St',
                 minLength: 5,
@@ -177,7 +177,7 @@ class _FormPage2State extends State<FormPage2> {
 
               // Area Field
               _buildTextFormField(
-                controller: _propertyDetailsController,
+                controller: _propertyAddressController,
                 label: 'Area (sq ft)',
                 hintText: 'ex: 1500 sq ft',
                 minLength: 5,
@@ -240,7 +240,7 @@ class _FormPage2State extends State<FormPage2> {
 
 
               // Submit Button
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               Center(
                 child: ElevatedButton(
                   onPressed: _submitForm,
